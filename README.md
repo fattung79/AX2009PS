@@ -12,15 +12,21 @@ Summary
 The module is written under the assumption that the businessConnector dll and a valid .axc to be available with the script module.
 The module will copy those 2 files to C:\Temp if they are not already available. Feel free to change the code in Get-AXObject function to suits your need.
 
-Once the connection to AX is settled. Play around with the New-AXSelectStmt function. Get-help New-AXSelectStmt to see more information.
+Once the connection to AX is settled. Play around with the New-AXSelectStmt function. 
+
+```Powershell
+Get-help New-AXSelectStmt 
+```
+
+to see more information.
 
 Available Functions
 ----------------
-Use-Culture 
-Convert-Filename 
-Get-AXObject 
-Get-AXInfo 
-New-AXSelectStmt 
+- Use-Culture 
+- Convert-Filename 
+- Get-AXObject 
+- Get-AXInfo 
+- New-AXSelectStmt 
 
 Installation
 ----------------
