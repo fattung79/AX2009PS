@@ -286,7 +286,8 @@ Function New-AXSelectStmt
         [string] $company = "",
         [string] $language = "",
         [string] $aos = "",
-        [string] $config = ""
+        [string] $config = "",
+        [switch] $showLabel
     )
 
     Try
@@ -313,21 +314,37 @@ Function New-AXSelectStmt
                 for ([int] $j=0; $j -lt $tablebuffers.Count; $j++)
                 {
                     $i = 1
+                    $fieldCounts = 0
                     Do
                     {
                         if ($tableBuffers[$j].get_fieldLabel($i) -eq "UNKNOWN")
                         {
+                            $i++
                             continue;
                         }
 
-                        $fieldLabel = $tableBuffers[$j].get_FieldLabel($i)
-                        if ($tables.Count -gt 1)
+                        if ($showLabel)
                         {
-                            $fieldLabel = $tables[$j] + "_" + $fieldLabel
+                            $fieldLabel = $tableBuffers[$j].FieldLabel($i)
+                            if ($tables.Count -gt 1)
+                            {
+                                $fieldLabel = $tables[$j] + "_" + $fieldLabel
+                            }
                         }
+                        else
+                        {                                                        
+                            $dictField = $ax.CreateAxaptaObject("SysDictField",$tableBuffers[$j].field("tableId"),$i)
+                            $fieldLabel = $dictField.Call("name")
+                            if ($tables.Count -gt 1)
+                            {
+                                $fieldLabel = $tables[$j] + "_" + $fieldLabel
+                            }
+                        }
+                                                                        
                         $obj | Add-Member -Name $fieldLabel -Value $tableBuffers[$j].Field($i) -MemberType NoteProperty; 
+                        $fieldCounts++
                         $i++
-                    } while ($i -le $numOfFields)                                           
+                    } while ($fieldCounts -lt $numOfFields)                                           
                 } 
             }
             else
@@ -342,11 +359,22 @@ Function New-AXSelectStmt
                             continue;
                         }
 
-                        $fieldLabel = $tableBuffers[$j].get_FieldLabel($f)
-                        if ($tables.Count -gt 1)
+                        if ($showLabel)
                         {
-                            $fieldLabel = $tables[$j] + "_" + $fieldLabel
-                        }                        
+                            $fieldLabel = $tableBuffers[$j].FieldLabel($f)
+                            if ($tables.Count -gt 1)
+                            {
+                                $fieldLabel = $tables[$j] + "_" + $fieldLabel
+                            }
+                        }
+                        else
+                        {
+                            $fieldLabel = $f
+                            if ($tables.Count -gt 1)
+                            {
+                                $fieldLabel = $tables[$j] + "_" + $fieldLabel
+                            }                        
+                        }
                         $obj | Add-Member -Name $fieldLabel -Value $tableBuffers[$j].Field($f) -MemberType NoteProperty;
                     }
                 }
