@@ -180,6 +180,11 @@ Function Get-AXObject
         [parameter(Mandatory=$false)] [string] $config = ""      
     )
     
+    if ([Environment]::Is64BitProcess)
+    {
+        Throw "Powershell must be running as 32bit process to access AX."
+    }
+
     #region Setup DLL
     $tempPath = "C:\temp"
 
@@ -429,7 +434,7 @@ Function New-AXSelectStmt
     } 
     Finally 
     {
-        if(-not $ax.Logoff())        
+        if($ax -ne $null -and (-not $ax.Logoff()))
         {
             $Global:logOffAXFailed
         }
@@ -481,7 +486,7 @@ Function Get-AXInfo
     } 
     Finally 
     {
-        if(-not $ax.Logoff())
+        if($ax -ne $null -and (-not $ax.Logoff()))
         {
             $Global:logOffAXFailed
         }
